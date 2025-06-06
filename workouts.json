@@ -1,0 +1,54 @@
+{
+    "owen": [
+        {
+            "date": "2025-06-06",
+            "duration": "00:8:00",
+            "distance_m": 2000,
+            "avg_pace": "2:00",
+            "stroke_rate": "20",
+            "notes": "none"
+        },
+        {
+            "date": "2025-06-06",
+            "duration": "00:15:00",
+            "distance_m": 2000,
+            "avg_pace": "2:00",
+            "stroke_rate": "20",
+            "notes": ""
+        },
+        {
+            "date": "2025-06-06",
+            "duration": "00:30:00",
+            "distance_m": 8000,
+            "avg_pace": "2:00",
+            "stroke_rate": "24",
+            "notes": ""
+        },
+        {
+            "date": "2025-06-06",
+            "duration": "00:30:00",
+            "distance_m": 1,
+            "avg_pace": "1",
+            "stroke_rate": "1",
+            "notes": ""
+        }
+    ],
+    "liam": [
+        {
+            "date": "2025-06-06",
+            "duration": "5:00",
+            "distance_m": 2000,
+            "avg_pace": "2:00",
+            "stroke_rate": "20",
+            "notes": ""
+        },
+        {
+            "date": "2025-06-07",
+            "duration": "00:30:00",
+            "distance_m": 2000,
+            "avg_pace": "2:00",
+            "stroke_rate": "20",
+            "notes": ""
+        }
+    ]
+}

@@ -1,0 +1,33 @@
+{
+  "9ed8e76a-243e-4163-953d-b3b417733605": {
+    "name": "N150",
+    "members": [
+      "owen"
+    ],
+    "workouts": [
+      {
+        "date": "2025-06-06",
+        "duration": "00:30:00",
+        "distance_m": 1,
+        "avg_pace": "1",
+        "stroke_rate": "1",
+        "notes": "",
+        "user": "owen"
+      }
+    ]
+  },
+  "8c876c9a-ad10-47c3-a255-ca7628412cbf": {
+    "name": "N175",
+    "members": [
+      "owen"
+    ],
+    "workouts": []
+  },
+  "7e43cdff-daf5-40cc-8fc7-8dc003fec38a": {
+    "name": "Liam's Group",
+    "members": [
+      "liam"
+    ],
+    "workouts": []
+  }
+}
