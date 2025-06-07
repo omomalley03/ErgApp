@@ -23,6 +23,7 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id) if user_id in load_users() else None
 
+
 # -------------------- Helpers --------------------
 
 def load_users():
