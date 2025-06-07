@@ -12,7 +12,7 @@ USERS_FILE = 'users.json'
 WORKOUTS_FILE = 'workouts.json'
 GROUPS_FILE = 'groups.json'
 
-
+# NEW SQL CODE!!
 # -------------------- User Class --------------------
 
 class User(UserMixin):
