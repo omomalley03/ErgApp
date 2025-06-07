@@ -155,7 +155,7 @@ def create_group():
         if not group_name:
             flash("Group name is required.")
             return redirect(url_for('create_group'))
-        
+
         groups = load_groups()
         new_id = str(uuid.uuid4())
         groups[new_id] = {
@@ -191,7 +191,7 @@ def join_group():
         save_groups(groups)
         flash("Joined group successfully!")
         return redirect(url_for('groups_dashboard'))
-    
+
     # GET
     return '''
     <form method="post">
@@ -206,7 +206,7 @@ def join_group():
 def groups_dashboard():
     groups = load_groups()
     user_groups = {gid: g for gid, g in groups.items() if current_user.id in g['members']}
-    
+
     html = "<h2>Your Groups</h2><ul>"
     for gid, g in user_groups.items():
         html += f'<li><a href="/groups/{gid}">{g["name"]}</a></li>'
