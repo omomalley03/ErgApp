@@ -12,7 +12,7 @@ USERS_FILE = 'users.json'
 WORKOUTS_FILE = 'workouts.json'
 GROUPS_FILE = 'groups.json'
 
-# NEW SQL CODE!!!!
+
 # -------------------- User Class --------------------
 
 class User(UserMixin):
@@ -81,9 +81,10 @@ def add_workout_to_group(group_id, workout_data):
 @app.route('/')
 @login_required
 def index():
+    x = 1
     workouts = load_workouts().get(current_user.id, [])
     user_groups = get_user_groups(current_user.id)
-    return render_template('index.html', workouts=workouts, user_groups=user_groups)
+    return render_template('index.html', workouts=workouts, user_groups=user_groups, username = current_user.id)
 
 @app.route('/add', methods=['POST'])
 @login_required
@@ -236,7 +237,10 @@ def group_workouts(group_id):
     html += '<a href="/groups">Back to Groups</a>'
     return html
 
-
+@app.route('/periodization')
+@login_required
+def periodization():
+    return render_template('periodization.html',user=current_user.id)
 
 if __name__ == '__main__':
     app.run(debug=True)
