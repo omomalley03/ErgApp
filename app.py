@@ -86,6 +86,8 @@ def index():
     user_groups = get_user_groups(current_user.id)
     return render_template('index.html', workouts=workouts, user_groups=user_groups, username = current_user.id)
 
+
+
 @app.route('/add', methods=['POST'])
 @login_required
 
@@ -203,22 +205,31 @@ def join_group():
     '''
 
 
-@app.route('/groups')
+@app.route('/groups', methods=['GET', 'POST'])
 @login_required
 def groups_dashboard():
-    groups = load_groups()
-    user_groups = {gid: g for gid, g in groups.items() if current_user.id in g['members']}
 
-    html = "<h2>Your Groups</h2><ul>"
-    for gid, g in user_groups.items():
-        html += f'<li><a href="/groups/{gid}">{g["name"]}</a></li>'
-    html += "</ul>"
-    html += (
-        '<a href="/create_group">Create Group</a> | '
-        '<a href="/join_group">Join Group</a> | '
-        '<a href="/">Home</a>'
-    )
-    return html
+    # find the groups this user is a part of already
+    groups = load_groups()
+    user_groups = get_user_groups(current_user.id)
+
+    # if a form is filled out to join a group
+    if request.method == 'POST':
+        group_id = request.form.get('group_id')
+        groups = load_groups()
+        if group_id not in groups:
+            flash("Group ID not found.")
+            return redirect(url_for('groups_dashboard'))
+        if current_user.id in groups[group_id]['members']:
+            flash("You are already a member of this group.")
+            return redirect(url_for('groups_dashboard'))
+
+        groups[group_id]['members'].append(current_user.id)
+        save_groups(groups)
+        flash("Joined group successfully!")
+        return redirect(url_for('groups_dashboard'))
+
+    return render_template('groups.html',user_groups=user_groups)
 
 
 
@@ -237,10 +248,11 @@ def group_workouts(group_id):
     html += '<a href="/groups">Back to Groups</a>'
     return html
 
-@app.route('/periodization')
+@app.route('/training-plan')
 @login_required
-def periodization():
-    return render_template('periodization.html',user=current_user.id)
+def trainingplan():
+    return render_template('training-plan.html',user=current_user.id)
 
 if __name__ == '__main__':
     app.run(debug=True)
+

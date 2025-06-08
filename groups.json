@@ -26,8 +26,37 @@
   "7e43cdff-daf5-40cc-8fc7-8dc003fec38a": {
     "name": "Liam's Group",
     "members": [
+      "liam",
+      "owen"
+    ],
+    "workouts": [
+      {
+        "date": "2025-06-08",
+        "duration": "00:8:00",
+        "distance_m": 2000,
+        "avg_pace": "2:00",
+        "stroke_rate": "20",
+        "notes": "no notes",
+        "user": "owen"
+      }
+    ]
+  },
+  "86b64faa-7c1f-46d8-ac53-55c023e453db": {
+    "name": "Another Group",
+    "members": [
+      "owen",
       "liam"
     ],
-    "workouts": []
+    "workouts": [
+      {
+        "date": "2025-06-08",
+        "duration": "00:20:00",
+        "distance_m": 5000,
+        "avg_pace": "2:00",
+        "stroke_rate": "20",
+        "notes": "",
+        "user": "liam"
+      }
+    ]
   }
 }
