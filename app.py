@@ -8,9 +8,10 @@ app.secret_key = 'your-secret-key'
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
-USERS_FILE = 'users.json'
-WORKOUTS_FILE = 'workouts.json'
-GROUPS_FILE = 'groups.json'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+WORKOUTS_FILE = os.path.join(BASE_DIR, 'workouts.json')
+USERS_FILE = os.path.join(BASE_DIR, 'users.json')
+GROUPS_FILE = os.path.join(BASE_DIR, 'groups.json')
 
 
 # -------------------- User Class --------------------
