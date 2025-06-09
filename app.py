@@ -80,11 +80,13 @@ def add_workout_to_group(group_id, workout_data):
 # -------------------- Routes --------------------
 
 @app.route('/')
-@login_required
 def index():
-    workouts = load_workouts().get(current_user.id, [])
-    user_groups = get_user_groups(current_user.id)
-    return render_template('index.html', workouts=workouts, user_groups=user_groups, username = current_user.id)
+    if not current_user.is_authenticated:
+        return redirect('/signup')
+    else:
+        workouts = load_workouts().get(current_user.id, [])
+        user_groups = get_user_groups(current_user.id)
+        return render_template('index.html', workouts=workouts, user_groups=user_groups, username = current_user.id)
 
 
 
