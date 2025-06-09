@@ -47,6 +47,22 @@
             "avg_pace": "2:00",
             "stroke_rate": "20",
             "notes": "no notes"
+        },
+        {
+            "date": "2025-06-08",
+            "duration": "00:16:00",
+            "distance_m": 4000,
+            "avg_pace": "2:00",
+            "stroke_rate": "20",
+            "notes": ""
+        },
+        {
+            "date": "2025-06-08",
+            "duration": "00:10:00",
+            "distance_m": 2500,
+            "avg_pace": "2:00",
+            "stroke_rate": "",
+            "notes": ""
         }
     ],
     "liam": [

@@ -7,24 +7,7 @@ Home - Rowing App
 {% block maincontent %}
 
 <h1>Welcome, {{ username }}!</h1>
-<hr />
-<h3>Add Workout</h3>
-<form method="POST" action="/add">
-  <input name="date" type="date" required /><br />
-  <input name="duration" placeholder="Duration (e.g. 00:30:00)" /><br />
-  <input name="distance_m" type="number" placeholder="Distance (m)" /><br />
-  <input name="avg_pace" placeholder="Avg Pace" /><br />
-  <input name="stroke_rate" placeholder="Stroke Rate" /><br />
-  <textarea name="notes" placeholder="Notes"></textarea><br />
-  <button type="submit">Add Workout</button>
-  <label for="group_id">Share with Group (optional):</label>
-  <select name="group_id" id="group_id">
-    <option value="">-- Select a group --</option>
-    {% for group_id, group_name in user_groups %}
-    <option value="{{ group_id }}">{{ group_name }}</option>
-    {% endfor %}
-  </select>
-</form>
+
 <hr />
 <h3>Your Workouts</h3>
 {% for w in workouts %}

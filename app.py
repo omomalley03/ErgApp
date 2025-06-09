@@ -81,40 +81,45 @@ def add_workout_to_group(group_id, workout_data):
 @app.route('/')
 @login_required
 def index():
-    x = 1
     workouts = load_workouts().get(current_user.id, [])
     user_groups = get_user_groups(current_user.id)
     return render_template('index.html', workouts=workouts, user_groups=user_groups, username = current_user.id)
 
 
 
-@app.route('/add', methods=['POST'])
+@app.route('/add', methods=['GET','POST'])
 @login_required
 
 def add_workout():
-    workout = {
-        'date': request.form['date'],
-        'duration': request.form['duration'],
-        'distance_m': int(request.form['distance_m']),
-        'avg_pace': request.form['avg_pace'],
-        'stroke_rate': request.form['stroke_rate'],
-        'notes': request.form['notes']
-    }
+    user_workouts = load_workouts().get(current_user.id,[])
+    user_groups = get_user_groups(current_user.id)
+    if request.method=="POST":
+        workout = {
+            'date': request.form['date'],
+            'duration': request.form['duration'],
+            'distance_m': int(request.form['distance_m']),
+            'avg_pace': request.form['avg_pace'],
+            'stroke_rate': request.form['stroke_rate'],
+            'notes': request.form['notes']
+        }
 
-    all_workouts = load_workouts()
-    user_workouts = all_workouts.get(current_user.id, [])
-    user_workouts.append(workout)
-    all_workouts[current_user.id] = user_workouts
-    save_workouts(all_workouts)
+        all_workouts = load_workouts()
+        user_workouts = all_workouts.get(current_user.id, [])
+        user_workouts.append(workout)
+        all_workouts[current_user.id] = user_workouts
+        save_workouts(all_workouts)
 
-    # Optional: sync to group if specified
-    group_id = request.form.get('group_id')
-    if group_id:
-        workout_with_user = dict(workout)  # Copy workout data
-        workout_with_user['user'] = current_user.id
-        add_workout_to_group(group_id, workout_with_user)
+        # Optional: sync to group if specified
+        group_id = request.form.get('group_id')
+        if group_id:
+            workout_with_user = dict(workout)  # Copy workout data
+            workout_with_user['user'] = current_user.id
+            add_workout_to_group(group_id, workout_with_user)
+        flash("Workout Saved!")
+        return redirect('/add')
 
-    return redirect('/')
+    return render_template('add-workout.html', workouts=user_workouts, user_groups=user_groups, username = current_user.id)
+
 
 
 
@@ -129,7 +134,7 @@ def login():
             login_user(User(username))
             return redirect('/')
         return "Invalid credentials", 401
-    return render_template('login.html')
+    return render_template('login.html',current_user=current_user)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
