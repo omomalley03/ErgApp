@@ -13,7 +13,7 @@ WORKOUTS_FILE = os.path.join(BASE_DIR, 'workouts.json')
 USERS_FILE = os.path.join(BASE_DIR, 'users.json')
 GROUPS_FILE = os.path.join(BASE_DIR, 'groups.json')
 
-
+# NEW UPDATE!!
 # -------------------- User Class --------------------
 
 class User(UserMixin):
@@ -149,7 +149,7 @@ def signup():
         password = request.form['password']
         if username in users:
             return "User already exists", 400
-        users[username] = generate_password_hash(password)
+        users[username] = generate_password_hash(password,"pbkdf2")
         save_users(users)
         return redirect('/login')
     return render_template('signup.html')
