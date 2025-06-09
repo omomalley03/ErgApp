@@ -91,6 +91,24 @@ def index():
 @login_required
 
 def add_workout():
+    if request.method=="POST":
+        # get form data
+        def add_workout():
+            workout = {
+            'date': request.form['date'],
+            'duration': request.form['duration'],
+            'distance_m': int(request.form['distance_m']),
+            'avg_pace': request.form['avg_pace'],
+            'stroke_rate': request.form['stroke_rate'],
+            'notes': request.form['notes']
+            }
+
+            all_workouts = load_workouts()
+            user_workouts = all_workouts.get(current_user.id, [])
+            user_workouts.append(workout)
+            all_workouts[current_user.id] = user_workouts
+            save_workouts(all_workouts)
+            return redirect('/')
     return render_template('add-workout.html',types = [{'id': 'SD', 'name': "Single Distance"},{'id': 'ST', 'name': 'Single Time'},{'id': 'ID', 'name': 'Intervals Distance'},{'id': 'IT', 'name': 'Intervals Time'}])
 
 @app.route('/login', methods=['GET', 'POST'])
