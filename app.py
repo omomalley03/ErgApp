@@ -76,6 +76,13 @@ def add_workout_to_group(group_id, workout_data):
         return True
     return False
 
+def get_group_id_by_name(group_name):
+    groups = load_groups()
+    for group_id, group_data in groups.items():
+        if group_data.get("name") == group_name:
+            return group_id
+    return None  # or raise an error if you prefer
+
 
 # -------------------- Routes --------------------
 
@@ -154,58 +161,58 @@ def logout():
     return redirect('/login')
 
 
-@app.route('/create_group', methods=['GET', 'POST'])
-@login_required
-def create_group():
-    if request.method == 'POST':
-        group_name = request.form.get('group_name')
-        if not group_name:
-            flash("Group name is required.")
-            return redirect(url_for('create_group'))
+# @app.route('/create_group', methods=['GET', 'POST'])
+# @login_required
+# def create_group():
+#     if request.method == 'POST':
+#         group_name = request.form.get('group_name')
+#         if not group_name:
+#             flash("Group name is required.")
+#             return redirect(url_for('create_group'))
 
-        groups = load_groups()
-        new_id = str(uuid.uuid4())
-        groups[new_id] = {
-            'name': group_name,
-            'members': [current_user.id],
-            'workouts': []
-        }
-        save_groups(groups)
-        flash(f"Group '{group_name}' created!")
-        return redirect(url_for('groups_dashboard'))
-    # GET
-    return '''
-    <form method="post">
-        Group Name: <input name="group_name" type="text" required>
-        <input type="submit" value="Create Group">
-    </form>
-    '''
+#         groups = load_groups()
+#         new_id = str(uuid.uuid4())
+#         groups[new_id] = {
+#             'name': group_name,
+#             'members': [current_user.id],
+#             'workouts': []
+#         }
+#         save_groups(groups)
+#         flash(f"Group '{group_name}' created!")
+#         return redirect(url_for('groups_dashboard'))
+#     # GET
+#     return '''
+#     <form method="post">
+#         Group Name: <input name="group_name" type="text" required>
+#         <input type="submit" value="Create Group">
+#     </form>
+#     '''
 
-@app.route('/join_group', methods=['GET', 'POST'])
-@login_required
-def join_group():
-    if request.method == 'POST':
-        group_id = request.form.get('group_id')
-        groups = load_groups()
-        if group_id not in groups:
-            flash("Group ID not found.")
-            return redirect(url_for('join_group'))
-        if current_user.id in groups[group_id]['members']:
-            flash("You are already a member of this group.")
-            return redirect(url_for('groups_dashboard'))
+# @app.route('/join_group', methods=['GET', 'POST'])
+# @login_required
+# def join_group():
+#     if request.method == 'POST':
+#         group_id = request.form.get('group_id')
+#         groups = load_groups()
+#         if group_id not in groups:
+#             flash("Group ID not found.")
+#             return redirect(url_for('join_group'))
+#         if current_user.id in groups[group_id]['members']:
+#             flash("You are already a member of this group.")
+#             return redirect(url_for('groups_dashboard'))
 
-        groups[group_id]['members'].append(current_user.id)
-        save_groups(groups)
-        flash("Joined group successfully!")
-        return redirect(url_for('groups_dashboard'))
+#         groups[group_id]['members'].append(current_user.id)
+#         save_groups(groups)
+#         flash("Joined group successfully!")
+#         return redirect(url_for('groups_dashboard'))
 
-    # GET
-    return '''
-    <form method="post">
-        Group ID: <input name="group_id" type="text" required>
-        <input type="submit" value="Join Group">
-    </form>
-    '''
+#     # GET
+#     return '''
+#     <form method="post">
+#         Group ID: <input name="group_id" type="text" required>
+#         <input type="submit" value="Join Group">
+#     </form>
+#     '''
 
 
 @app.route('/groups', methods=['GET', 'POST'])
@@ -216,22 +223,39 @@ def groups_dashboard():
     groups = load_groups()
     user_groups = get_user_groups(current_user.id)
 
-    # if a form is filled out to join a group
+    # if a form is filled out
     if request.method == 'POST':
-        group_id = request.form.get('group_id')
-        groups = load_groups()
-        if group_id not in groups:
-            flash("Group ID not found.")
-            return redirect(url_for('groups_dashboard'))
-        if current_user.id in groups[group_id]['members']:
-            flash("You are already a member of this group.")
-            return redirect(url_for('groups_dashboard'))
+        form_type = request.form.get('form_type')
+        if form_type == "join_group":
+            group_id = request.form.get('group_id')
+            groups = load_groups()
+            if group_id not in groups:
+                flash("Group ID not found.")
+                return redirect(url_for('groups_dashboard'))
+            if current_user.id in groups[group_id]['members']:
+                flash("You are already a member of this group.")
+                return redirect(url_for('groups_dashboard'))
 
-        groups[group_id]['members'].append(current_user.id)
-        save_groups(groups)
-        flash("Joined group successfully!")
-        return redirect(url_for('groups_dashboard'))
+            groups[group_id]['members'].append(current_user.id)
+            save_groups(groups)
+            flash("Joined group successfully!")
+            return redirect(url_for('groups_dashboard'))
+        elif form_type == "create_group":
+            group_name = request.form.get('group_name')
+            if not group_name:
+                flash("Group name is required.")
+                return redirect(url_for('groups_dashboard'))
 
+            groups = load_groups()
+            new_id = str(uuid.uuid4())[0:6]
+            groups[new_id] = {
+                'name': group_name,
+                'members': [current_user.id],
+                'workouts': []
+            }
+            save_groups(groups)
+            flash(f"Group '{group_name}' created! Share this ID with others: {new_id}")
+            return redirect(url_for('groups_dashboard'))
     return render_template('groups.html',user_groups=user_groups)
 
 
@@ -244,7 +268,7 @@ def group_workouts(group_id):
     if not group or current_user.id not in group['members']:
         return "Group not found or access denied", 404
 
-    html = f"<h2>{group['name']} Workouts</h2><ul>"
+    html = f"<h2>{group['name']} Workouts</h2><h3>Group ID: {group_id}</h3><ul>"
     for w in group['workouts']:
         html += f"<li>{w['user']} - {w['date']} - {w['distance_m']}m - {w['duration']} - {w.get('notes','')}</li>"
     html += "</ul>"

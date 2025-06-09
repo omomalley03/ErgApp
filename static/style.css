@@ -176,8 +176,8 @@ footer {
 
 .popup {
   position: fixed;
-  top: 40%;
-  right: 10%;
+  top: 50%;
+  right: 50%;
   background-color: #4caf50; /* Green for success */
   color: white;
   padding: 15px 20px;
