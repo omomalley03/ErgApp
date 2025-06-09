@@ -1,8 +1,34 @@
-{% extends "base.html" %} 
+{% extends "submission-screen.html" %} 
 
 {% block title %}
-Home - Rowing App 
+HardHat Rowing 
 {% endblock %} 
+
+{% block left %}
+<h2>Workout Monitor (Auto-Populates)</h2>
+<div id="erg-screen" class="c2-monitor">
+  <div class="top-row">
+    <div class="main-value" id="live-main">--</div>
+  </div>
+
+  <div class="date-row" id="live-date">--/--/----</div>
+
+  <div class="column-labels">
+    <div>Time</div>
+    <div>Meters</div>
+    <div>/500m</div>
+    <div>SPM</div>
+  </div>
+
+  <div class="data-row">
+    <div id="live-time">--:--.-</div>
+    <div id="live-distance">----</div>
+    <div id="live-split">--:--</div>
+    <div id="live-spm">--</div>
+  </div>
+</div>
+{% endblock %}
+
 
 {% block maincontent %}
 
@@ -10,8 +36,6 @@ Home - Rowing App
 <hr />
 
 <form id=addWorkoutForm method="POST">
-  <label for="date-question">Date:</label>
-  <input name="date" type="date" required /><br />
   <label for="workout-type">Workout Type:</label>
   <select id="workout-type" name="workout-type">
     <option value="">-- Choose --</option>
@@ -21,79 +45,191 @@ Home - Rowing App
 
   </select>
 
-  <div id="second-question-container" style="margin-top: 20px;"></div>
+  <div id="workout-questions"></div>
 </form>
 
-  <script>
-    const selectElement = document.getElementById("workout-type");
-    const secondQuestionContainer = document.getElementById("second-question-container");
 
-    selectElement.addEventListener("change", function () {
-      const value = this.value;
 
-      // Clear previous content
-      secondQuestionContainer.innerHTML = "";
+<script>
 
-      if (value === "SD") {
-        secondQuestionContainer.innerHTML = `
-            <label for="distance">Distance?</label>
-            <input type="number" id="distance" name="distance" />
-          `;
-      } else if (value === "ST") {
-        secondQuestionContainer.innerHTML = `
+const workoutType = document.getElementById("workout-type");
+const container = document.getElementById("workout-questions");
+
+function updateErgScreen() {
+  const date = document.getElementById("date")?.value || "0";
+  const minutes = document.getElementById("minutes")?.value || "0";
+  const seconds = document.getElementById("seconds")?.value || "0";
+  const distance = document.getElementById("distance")?.value || "--";
+  const spm = document.getElementById("spm")?.value || "--";
+
+  const paddedMin = String(minutes).padStart(2, '0');
+  const paddedSec = Number(seconds).toFixed(1).padStart(4, '0');
+
+  const totalSeconds = parseFloat(minutes) * 60 + parseFloat(seconds);
+  let split = "--:--";
+
+  if (distance && totalSeconds && distance !== "--") {
+    const pacePer500 = totalSeconds / (distance / 500);
+    const paceMin = Math.floor(pacePer500 / 60);
+    const paceSec = (pacePer500 % 60).toFixed(1).padStart(4, '0');
+    split = `${paceMin}:${paceSec}`;
+  }
+
+  // CHECK IF SINGLE DISTANCE OR SINGLE TIME
+  if (workoutType.value==="SD") {
+      document.getElementById("live-main").innerText = distance+"m";
+
+
+  } else if (workoutType.value === "ST") {
+      document.getElementById("live-main").innerText = `${paddedMin}:${paddedSec}`;
+
+  }
+  document.getElementById("live-time").innerText = `${paddedMin}:${paddedSec}`;
+  document.getElementById("live-distance").innerText = distance;
+  document.getElementById("live-split").innerText = split;
+  document.getElementById("live-spm").innerText = spm;
+
+  //date:
+  const [year, month, day] = date.split("-");
+const localDate = new Date(year, month - 1, day); // JS months are 0-indexed
+document.getElementById("live-date").innerText = localDate.toLocaleDateString(undefined, {
+  year: "numeric",
+  month: "short",
+  day: "numeric"
+});
+}
+
+workoutType.addEventListener("change", function () {
+  const workout_type = this.value;
+  container.innerHTML = ""; 
+
+  let html = "";
+  if (workout_type === "SD") {
+    container.innerHTML = `
+              <label for="date">Date:</label>
+              <input id="date" name="date" type="date" required value="${new Date().toISOString().split('T')[0]}" style="width: 150px;" /><br />
+              <label for="distance">Distance (m):</label>
+              <input 
+                type="number" 
+                id="distance" 
+                name="distance" 
+                min="0" 
+                step="1" 
+                style="width: 100px;" 
+                placeholder="meters" 
+                required
+              />
+              <br>
+  
               <label for="minutes">Duration:</label>
-    <input 
-      type="number" 
-      id="minutes" 
-      name="minutes" 
-      min="0" max="59" 
-      step="1" 
-      style="width: 75px;" 
-      placeholder="mm" 
-    />
-    <span>:</span>
-    <input 
-      type="number" 
-      id="seconds" 
-      name="seconds" 
-      min="0" max="59.9" 
-      step="0.1" 
-      style="width: 100px;" 
-      placeholder="ss.x" 
-    />
-          `;
-      }
+              <input 
+                type="number" 
+                id="minutes" 
+                name="minutes" 
+                min="0" max="59" 
+                step="1" 
+                style="width: 75px;" 
+                placeholder="mm" 
+                required
+              />
+              <span>:</span>
+              <input 
+                type="number" 
+                id="seconds" 
+                name="seconds" 
+                min="0" max="59.9" 
+                step="0.1" 
+                style="width: 100px;" 
+                placeholder="ss.x" 
+                required
+              />
+  
+              <label for="spm">SPM (optional):</label>
+              <input 
+                type="number" 
+                id="spm" 
+                name="spm" 
+                min="0"
+                step="1" 
+                style="width: 75px;" 
+                placeholder="spm" 
+                />
+
+                <button type="submit">Add Workout</button>
+            `;
+
+    // Attach listeners for live update
+    ["minutes", "seconds", "distance", "spm","date"].forEach(id => {
+      container.querySelector(`#${id}`).addEventListener("input", updateErgScreen);
     });
-  </script>
+    document.getElementById("date").addEventListener("input", updateErgScreen);
+
+
+    updateErgScreen(); // Initial fill
+  } else if (workout_type === "ST") {
+    container.innerHTML = `
+    <label for="date">Date:</label>
+              <input id="date" name="date" type="date" required value="${new Date().toISOString().split('T')[0]}" style="width: 150px;" /><br />
+              <label for="minutes">Duration:</label>
+            <input 
+              type="number" 
+              id="minutes" 
+              name="minutes" 
+              min="0" max="59" 
+              step="1" 
+              style="width: 75px;" 
+              placeholder="mm" 
+            />
+            <span>:</span>
+            <input 
+              type="number" 
+              id="seconds" 
+              name="seconds" 
+              min="0" max="59.9" 
+              step="0.1" 
+              style="width: 100px;" 
+              placeholder="ss.x" 
+            />
+
+            <br>
+             <label for="distance">Distance (m):</label>
+              <input 
+                type="number" 
+                id="distance" 
+                name="distance" 
+                min="0" 
+                step="1" 
+                style="width: 100px;" 
+                placeholder="meters" 
+                required
+              />
+
+               <label for="spm">SPM (optional):</label>
+              <input 
+                type="number" 
+                id="spm" 
+                name="spm" 
+                min="0"
+                step="1" 
+                style="width: 75px;" 
+                placeholder="spm" 
+                />
+                <button type="submit">Add Workout</button>
+
+
+                  `;
+                  ["minutes", "seconds", "distance", "spm","date"].forEach(id => {
+      container.querySelector(`#${id}`).addEventListener("input", updateErgScreen);
+    });
+    document.getElementById("date").addEventListener("input", updateErgScreen);
+
+
+    updateErgScreen(); // Initial fill
+
+  }
+});
+</script>
 
 
 
-
-
-  <!-- <input name="duration" placeholder="Duration (e.g. 00:30:00)" /><br />
-  <input name="distance_m" type="number" placeholder="Distance (m)" /><br />
-  <input name="avg_pace" placeholder="Avg Pace" /><br />
-  <input name="stroke_rate" placeholder="Stroke Rate" /><br />
-  <textarea name="notes" placeholder="Notes"></textarea><br />
-  <button type="submit">Add Workout</button>
-  <label for="group_id">Share with Group (optional):</label>
-  <select name="group_id" id="group_id">
-    <option value="">-- Select a group --</option>
-    {% for group_id, group_name in user_groups %}
-    <option value="{{ group_id }}">{{ group_name }}</option>
-    {% endfor %}
-  </select>
-</form>
-<hr /> -->
-<!-- <h3>Your Workouts</h3>
-{% for w in workouts %}
-<p>
-  {{ w.date }} — {{ w.duration }} — {{ w.distance_m }}m — {{ w.avg_pace }} — {{
-  w.stroke_rate }}spm
-</p>
-<p><em>{{ w.notes }}</em></p>
-<hr />
-{% endfor %} 
-{% endblock %} -->
-
-
+{% endblock %}

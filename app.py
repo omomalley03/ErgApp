@@ -227,7 +227,10 @@ def group_workouts(group_id):
 def trainingplan():
     return render_template('training-plan.html',user=current_user.id)
 
-
+@app.route('/ergscreen')
+@login_required
+def ergscreen():
+    return render_template('ergscreen.html')
 
 if __name__ == '__main__':
     app.run(debug=True)

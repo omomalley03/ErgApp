@@ -24,24 +24,13 @@
   </header>
 
   <div class="layout">
-    <aside class="sidebar left-sidebar">
-     {% block leftsidebar %}
+    <aside class="submission-sidebar left-submission-sidebar">
+     {% block left %}
 
      {% endblock %}
     </aside>
 
     <main class="main-content">
-      <div class="container">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="popup flash-{{ category }}">
-          <span class="close-btn" onclick="this.parentElement.style.display='none';">&times;</span>
-          {{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
 
         {% block maincontent %}
         <!-- page-specific content will go here -->
@@ -49,12 +38,7 @@
       </div>
     </main>
 
-    <aside class="sidebar right-sidebar">
-      <!-- Optional: Add recent activity, news, or a quote -->
-      {% block rightsidebar %}
-       <!-- custom stuff  -->
-      {% endblock %}
-    </aside>
+
   </div>
 
 
