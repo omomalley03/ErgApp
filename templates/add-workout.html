@@ -6,12 +6,71 @@ Home - Rowing App
 
 {% block maincontent %}
 
-<h1>Welcome, {{ username }}!</h1>
+<h1>Add a Workout</h1>
 <hr />
-<h3>Add Workout</h3>
-<form method="POST" action="/add">
+
+<form id=addWorkoutForm method="POST">
+  <label for="date-question">Date:</label>
   <input name="date" type="date" required /><br />
-  <input name="duration" placeholder="Duration (e.g. 00:30:00)" /><br />
+  <label for="workout-type">Workout Type:</label>
+  <select id="workout-type" name="workout-type">
+    <option value="">-- Choose --</option>
+    {% for t in types %}
+    <option value={{ t['id'] }}>{{ t['name']}}</option>
+    {% endfor %}
+
+  </select>
+
+  <div id="second-question-container" style="margin-top: 20px;"></div>
+</form>
+
+  <script>
+    const selectElement = document.getElementById("workout-type");
+    const secondQuestionContainer = document.getElementById("second-question-container");
+
+    selectElement.addEventListener("change", function () {
+      const value = this.value;
+
+      // Clear previous content
+      secondQuestionContainer.innerHTML = "";
+
+      if (value === "SD") {
+        secondQuestionContainer.innerHTML = `
+            <label for="distance">Distance?</label>
+            <input type="number" id="distance" name="distance" />
+          `;
+      } else if (value === "ST") {
+        secondQuestionContainer.innerHTML = `
+              <label for="minutes">Duration:</label>
+    <input 
+      type="number" 
+      id="minutes" 
+      name="minutes" 
+      min="0" max="59" 
+      step="1" 
+      style="width: 75px;" 
+      placeholder="mm" 
+    />
+    <span>:</span>
+    <input 
+      type="number" 
+      id="seconds" 
+      name="seconds" 
+      min="0" max="59.9" 
+      step="0.1" 
+      style="width: 100px;" 
+      placeholder="ss.x" 
+    />
+          `;
+      }
+    });
+  </script>
+
+
+
+
+
+  <!-- <input name="duration" placeholder="Duration (e.g. 00:30:00)" /><br />
   <input name="distance_m" type="number" placeholder="Distance (m)" /><br />
   <input name="avg_pace" placeholder="Avg Pace" /><br />
   <input name="stroke_rate" placeholder="Stroke Rate" /><br />
@@ -25,8 +84,8 @@ Home - Rowing App
     {% endfor %}
   </select>
 </form>
-<hr />
-<h3>Your Workouts</h3>
+<hr /> -->
+<!-- <h3>Your Workouts</h3>
 {% for w in workouts %}
 <p>
   {{ w.date }} — {{ w.duration }} — {{ w.distance_m }}m — {{ w.avg_pace }} — {{
@@ -35,8 +94,6 @@ Home - Rowing App
 <p><em>{{ w.notes }}</em></p>
 <hr />
 {% endfor %} 
-{% endblock %}
+{% endblock %} -->
 
-{% block rightsidebar %}
-<p>Hello</p>
-{% endblock %}
+
