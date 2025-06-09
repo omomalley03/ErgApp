@@ -93,22 +93,30 @@ def index():
 def add_workout():
     if request.method=="POST":
         # get form data
-        def add_workout():
-            workout = {
-            'date': request.form['date'],
-            'duration': request.form['duration'],
-            'distance_m': int(request.form['distance_m']),
-            'avg_pace': request.form['avg_pace'],
-            'stroke_rate': request.form['stroke_rate'],
-            'notes': request.form['notes']
-            }
+        minutes = int(request.form['minutes'])
+        seconds = float(request.form['seconds'])
+        distance = int(request.form['distance'])
 
-            all_workouts = load_workouts()
-            user_workouts = all_workouts.get(current_user.id, [])
-            user_workouts.append(workout)
-            all_workouts[current_user.id] = user_workouts
-            save_workouts(all_workouts)
-            return redirect('/')
+        total_seconds = minutes * 60 + seconds
+        if distance>0:
+            pace_per_500 = total_seconds / (distance / 500)
+            pace_str = f"{int(pace_per_500 // 60)}:{pace_per_500 % 60:04.1f}"
+
+        workout = {
+            'date': request.form['date'],
+            'duration': f"00:{minutes}:{seconds}",
+            'distance_m': int(request.form['distance']),
+            'avg_pace': pace_str,
+            'stroke_rate': request.form['spm'],
+            'notes': ''
+        }
+
+        all_workouts = load_workouts()
+        user_workouts = all_workouts.get(current_user.id, [])
+        user_workouts.append(workout)
+        all_workouts[current_user.id] = user_workouts
+        save_workouts(all_workouts)
+        return redirect('/')
     return render_template('add-workout.html',types = [{'id': 'SD', 'name': "Single Distance"},{'id': 'ST', 'name': 'Single Time'},{'id': 'ID', 'name': 'Intervals Distance'},{'id': 'IT', 'name': 'Intervals Time'}])
 
 @app.route('/login', methods=['GET', 'POST'])
