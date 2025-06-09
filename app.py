@@ -106,6 +106,7 @@ def add_workout():
     user_workouts.append(workout)
     all_workouts[current_user.id] = user_workouts
     save_workouts(all_workouts)
+    return redirect('/')
 
     # Optional: sync to group if specified
     group_id = request.form.get('group_id')
